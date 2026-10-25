@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StudentFlow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="auth-shell" id="authShell">
+      <div class="auth-card">
+        <div class="brand-panel">
+          <div class="brand-badge">StudentFlow</div>
+          <h1>Build your study routine.</h1>
+          <p>
+            Keep track of goals, assignments, spending, reviews, and everything in one dashboard.
+          </p>
+        </div>
+
+        <div class="auth-panel">
+          <div class="auth-toggle" aria-label="Authentication toggle">
+            <button class="auth-tab active" type="button" data-auth="signup">Sign Up</button>
+            <button class="auth-tab" type="button" data-auth="login">Log In</button>
+          </div>
+
+          <form id="signupForm" class="auth-form active-form">
+            <div class="field-row">
+              <label>
+                Full name
+                <input type="text" name="fullName" placeholder="Ariana Lee" required />
+              </label>
+              <label>
+                Age
+                <input type="number" name="age" min="10" max="100" placeholder="17" required />
+              </label>
+            </div>
+
+            <div class="field-row">
+              <label>
+                Course/Year
+                <input type="text" name="grade" placeholder="11 / BSIT / 2nd Year" required />
+              </label>
+              <label>
+                School ID number
+                <input type="text" name="schoolId" placeholder="ST-2048" required />
+              </label>
+            </div>
+
+            <label>
+              Profile picture
+              <input type="file" id="avatarInput" accept="image/*" />
+            </label>
+
+            <div class="preview-wrap">
+              <img id="avatarPreview" src="" alt="Profile preview" />
+            </div>
+
+            <label>
+              Password
+              <input type="password" name="password" placeholder="Create a password" required />
+            </label>
+
+            <button class="primary-btn" type="submit">Create account</button>
+          </form>
+
+          <form id="loginForm" class="auth-form">
+            <label>
+              School ID number
+              <input type="text" name="loginSchoolId" placeholder="ST-2048" required />
+            </label>
+
+            <label>
+              Password
+              <input type="password" name="loginPassword" placeholder="Enter password" required />
+            </label>
+
+            <button class="primary-btn" type="submit">Log in</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-shell hidden" id="dashboardShell">
+      <aside class="sidebar">
+        <div class="sidebar-brand">StudentFlow</div>
+
+        <div class="profile-mini">
+          <img id="navAvatar" alt="Student avatar" />
+          <div>
+            <h3 id="navName">Student</h3>
+            <p id="navId">ID: --</p>
+          </div>
+        </div>
+
+        <nav class="nav-list" aria-label="Dashboard navigation">
+          <button class="nav-item active" type="button" data-view="profile">Profile</button>
+          <button class="nav-item" type="button" data-view="classes">Classes</button>
+          <button class="nav-item" type="button" data-view="goals">Goal Tracker</button>
+          <button class="nav-item" type="button" data-view="assignments">Assignments</button>
+          <button class="nav-item" type="button" data-view="allowance">Finance</button>
+          <button class="nav-item" type="button" data-view="review">Review Area</button>
+          <button class="nav-item" type="button" data-view="emergency-stickers">Emergency Stickers</button>
+          <button class="nav-item" type="button" data-view="settings">Settings</button>
+        </nav>
+      </aside>
+
+      <main class="content-panel">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Dashboard</p>
+            <h2>Good morning, <span id="greetingName">Student</span></h2>
+          </div>
+          <button class="secondary-btn" id="logoutBtn" type="button">Log out</button>
+        </header>
+
+        <section id="view-profile" class="view-panel active">
+          <div class="profile-hero card glass-panel">
+            <img id="profileImage" alt="Student profile" />
+            <div class="profile-copy">
+              <p class="eyebrow">Student profile</p>
+              <h3 id="profileName">Student Name</h3>
+              <div class="profile-meta">
+                <span><strong>Age:</strong> <span id="profileAge">--</span></span>
+                <span><strong>School ID:</strong> <span id="profileSchoolId">--</span></span>
+              </div>
+              <div class="profile-badges">
+                <span id="profileGradeChip" class="chip">Course/Year --</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card card glass-panel">
+              <span class="label">Goals completed</span>
+              <strong id="goalsCompletedValue">0/0</strong>
+              <small id="goalsCompletedMeta">0 tracked</small>
+            </div>
+            <div class="stat-card card glass-panel">
+              <span class="label">Assignments due</span>
+              <strong id="assignmentsDueValue">0/0</strong>
+              <small id="assignmentsDueMeta">0 due</small>
+            </div>
+            <div class="stat-card card glass-panel">
+              <span class="label">Budget left</span>
+              <strong id="budgetLeftValue">$0.00</strong>
+              <small id="budgetLeftMeta">No entries</small>
+            </div>
+          </div>
+
+          <div class="student-grid">
+            <div class="student-card card glass-panel">
+              <div class="card-head">
+                <h4>Today's classes</h4>
+                <span class="tag">Today</span>
+              </div>
+              <ul id="classList" class="class-list"></ul>
+            </div>
+          </div>
+        </section>
+
+        <section id="view-classes" class="view-panel">
+          <div class="card panel-card glass-panel">
+            <div class="section-header">
+              <h3>Classes</h3>
+              <button class="section-settings-btn" type="button" data-settings="view-classes" aria-label="Class settings">⚙</button>
+            </div>
+            <ul id="classesList" class="class-entry-list"></ul>
+
+            <form id="classForm" class="mini-form hidden">
+              <div class="field-row compact-row">
+                <label>
+                  Class name
+                  <input id="className" type="text" placeholder="Biology" required />
+                </label>
+                <label>
+                  Professor
+                  <input id="classProfessor" type="text" placeholder="Dr. Singh" required />
+                </label>
+              </div>
+
+              <div class="class-days-wrap">
+                <span class="day-label">Day(s)</span>
+                <div class="day-picker" aria-label="Class days">
+                  <label><input type="checkbox" name="classDay" value="Mon" /> Mon</label>
+                  <label><input type="checkbox" name="classDay" value="Tue" /> Tue</label>
+                  <label><input type="checkbox" name="classDay" value="Wed" /> Wed</label>
+                  <label><input type="checkbox" name="classDay" value="Thu" /> Thu</label>
+                  <label><input type="checkbox" name="classDay" value="Fri" /> Fri</label>
+                  <label><input type="checkbox" name="classDay" value="Sat" /> Sat</label>
+                  <label><input type="checkbox" name="classDay" value="Sun" /> Sun</label>
+                </div>
+              </div>
+
+              <div class="time-field-wrap">
+                <label>
+                  Time
+                  <input id="classTime" type="time" required />
+                </label>
+              </div>
+              <div class="form-actions">
+                <button class="small-btn primary" type="submit">Save class</button>
+                <button class="small-btn secondary danger" type="button" id="cancelClassEdit">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section id="view-goals" class="view-panel">
+          <div class="card panel-card glass-panel">
+            <div class="section-header">
+              <h3>Goal tracker</h3>
+              <button class="section-settings-btn" type="button" data-settings="view-goals" aria-label="Goal settings">⚙</button>
+            </div>
+            <div id="goalsList" class="goal-list"></div>
+
+            <button id="toggleGoalArchive" class="small-btn secondary archive-toggle" type="button">View archive</button>
+
+            <div id="goalArchiveSection" class="archive-section" hidden>
+              <div class="section-header archive-header">
+                <h4>Archive</h4>
+                <span class="tag">Completed</span>
+              </div>
+              <div id="goalArchiveList" class="goal-list archive-list"></div>
+            </div>
+
+            <form id="goalForm" class="mini-form hidden">
+              <div class="field-row compact-row">
+                <label>
+                  Goal title
+                  <input id="goalTitle" type="text" placeholder="Study for biology test" required />
+                </label>
+                <input id="goalProgress" type="hidden" value="50" />
+              </div>
+              <label>
+                Notes
+                <textarea id="goalNote" rows="3" placeholder="Review chapter 5 and flashcards" required></textarea>
+              </label>
+
+              <div class="progress-status-wrap" aria-label="Goal progress status">
+                <button class="progress-status" type="button" data-progress="0">Planning <span>0%</span></button>
+                <button class="progress-status active" type="button" data-progress="50">In progress <span>50%</span></button>
+                <button class="progress-status" type="button" data-progress="100">Done <span>100%</span></button>
+              </div>
+
+              <div class="range-value-wrap">
+                <span>Current progress</span>
+                <strong id="goalProgressValue">50%</strong>
+              </div>
+              <div class="form-actions">
+                <button class="small-btn primary" type="submit">Save goal</button>
+                <button class="small-btn secondary danger" type="button" id="cancelGoalEdit">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section id="view-assignments" class="view-panel">
+          <div class="card panel-card glass-panel">
+            <div class="section-header">
+              <h3>Exam / project / assignment tracker</h3>
+              <button class="section-settings-btn" type="button" data-settings="view-assignments" aria-label="Assignment settings">⚙</button>
+            </div>
+            <ul id="assignmentsList" class="task-list"></ul>
+
+            <form id="assignmentForm" class="mini-form hidden">
+              <div class="field-row compact-row">
+                <label>
+                  Assignment title
+                  <input id="assignmentTitle" type="text" placeholder="Math quiz" required />
+                </label>
+                <label>
+                  Due date
+                  <input id="assignmentDate" type="date" required />
+                </label>
+              </div>
+              <label>
+                Status
+                <select id="assignmentStatus">
+                  <option value="in progress">In progress</option>
+                  <option value="done">Done</option>
+                  <option value="planning">Planning</option>
+                </select>
+              </label>
+              <div class="form-actions">
+                <button class="small-btn primary" type="submit">Save assignment</button>
+                <button class="small-btn secondary danger" type="button" id="cancelAssignmentEdit">Cancel</button>
+              </div>
+            </form>
+
+            <button id="toggleAssignmentArchive" class="small-btn secondary archive-toggle" type="button">View archive</button>
+
+            <div id="assignmentArchiveSection" class="archive-section" hidden>
+              <div class="section-header archive-header">
+                <h4>Archive</h4>
+                <span class="tag">Completed</span>
+              </div>
+              <ul id="assignmentArchiveList" class="task-list archive-list"></ul>
+            </div>
+          </div>
+        </section>
+
+        <section id="view-allowance" class="view-panel">
+          <div class="card panel-card glass-panel">
+            <div class="section-header">
+              <h3>Finance tracker</h3>
+              <button class="section-settings-btn" type="button" data-settings="view-allowance" aria-label="Finance settings">⚙</button>
+            </div>
+            <div id="budgetSummary" class="budget-summary"></div>
+
+            <form id="allowanceForm" class="mini-form allowance-form hidden">
+              <div class="field-row compact-row allowance-fields">
+                <label>
+                  Reason
+                  <input id="allowanceLabel" type="text" placeholder="Transport" required />
+                </label>
+                <label>
+                  Amount
+                  <input id="allowanceAmount" type="number" step="0.01" placeholder="-25" required />
+                </label>
+              </div>
+              <div class="form-actions">
+                <button class="small-btn primary" type="submit">Save entry</button>
+                <button class="small-btn secondary danger" type="button" id="cancelAllowanceEdit">Cancel</button>
+              </div>
+            </form>
+
+            <ul id="allowanceList" class="expense-list"></ul>
+            <button id="allowanceArchiveToggle" class="small-btn secondary allowance-archive-toggle" type="button" hidden>Archive</button>
+          </div>
+        </section>
+
+        <div id="allowanceArchiveModal" class="allowance-modal hidden" aria-hidden="true">
+          <div class="allowance-modal-card">
+            <div class="section-header">
+              <h3>Past entries</h3>
+              <button id="closeAllowanceArchive" class="inline-action" type="button">Close</button>
+            </div>
+            <ul id="allowanceArchiveList" class="expense-list archive-list"></ul>
+          </div>
+        </div>
+
+        <section id="view-review" class="view-panel">
+          <div class="card panel-card glass-panel">
+            <div class="section-header">
+              <h3>Review area</h3>
+            </div>
+            <div id="reviewGrid" class="review-grid"></div>
+          </div>
+        </section>
+
+        <section id="view-emergency-stickers" class="view-panel">
+          <div class="card panel-card glass-panel">
+            <div class="section-header">
+              <h3>Emergency Stickers</h3>
+              <button class="section-settings-btn" type="button" data-settings="view-emergency-stickers" aria-label="Emergency sticker settings">⚙</button>
+            </div>
+            <div id="emergencyStickersList" class="emergency-sticker-list"></div>
+
+            <form id="emergencyStickerForm" class="mini-form hidden">
+              <div class="field-row compact-row">
+                <label>
+                  Sticker title
+                  <input id="emergencyStickerTitle" type="text" placeholder="Emergency profile" value="Emergency profile" />
+                </label>
+                <label>
+                  URL
+                  <input id="emergencyStickerUrl" type="url" placeholder="https://example.com/contact" required />
+                </label>
+              </div>
+
+              <label>
+                QR code image
+                <input id="emergencyStickerQrInput" type="file" accept="image/*" />
+              </label>
+
+              <div class="preview-wrap small-preview" id="emergencyStickerPreviewWrap">
+                <div class="qr-image-box">
+                  <img id="emergencyStickerPreview" src="" alt="Emergency sticker QR preview" />
+                </div>
+                <button class="emergency-create-link emergency-create-link-inline" type="button" data-emergency-admin="https://rider-emergency-id.raydori242020.workers.dev/admin">
+                  Doesn’t have QR yet? Create one now!
+                </button>
+              </div>
+
+              <div class="form-actions">
+                <button class="small-btn primary" type="submit">Save sticker</button>
+                <button class="small-btn secondary danger" type="button" id="cancelEmergencyStickerEdit">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section id="view-settings" class="view-panel">
+          <div class="card panel-card">
+            <div class="section-header">
+              <h3>Settings</h3>
+              <span class="tag">Personalise</span>
+            </div>
+            <div class="settings-list">
+              <label><span>Dark mode</span><input id="darkModeToggle" type="checkbox" checked /></label>
+
+              <div class="premium-panel" id="premiumPanel">
+                <div class="premium-panel-header">
+                  <div>
+                    <p class="eyebrow">Premium package</p>
+                    <h4>Unlock the full StudentFlow kit</h4>
+                  </div>
+                  <span class="tag" id="premiumStatus">Free plan</span>
+                </div>
+                <p>Free accounts can create up to 3 classes, 3 goals, and 3 assignments. Premium includes a physical RFID card, unlimited classes, goals, assignments, and Emergency Stickers.</p>
+                <ul>
+                  <li>Unlimited classes, goals, and assignments</li>
+                  <li>Emergency Stickers access</li>
+                  <li>Physical RFID card included</li>
+                </ul>
+                <button id="upgradePremiumButton" class="small-btn primary" type="button">Activate Premium (demo)</button>
+                <small class="premium-note">Payment processing is not connected in this local app yet.</small>
+              </div>
+
+              <div class="settings-form-group">
+                <label>
+                  Full name
+                  <input id="settingsFullName" type="text" placeholder="Ariana Lee" />
+                </label>
+
+                <label>
+                  School ID
+                  <input id="settingsSchoolId" type="text" placeholder="ST-2048" />
+                </label>
+
+                <label>
+                  Change password
+                  <input id="settingsPassword" type="password" placeholder="New password" />
+                </label>
+
+                <label>
+                  Age
+                  <input id="settingsAge" type="number" min="10" max="100" placeholder="17" />
+                </label>
+
+                <label>
+                  Course/Year
+                  <input id="settingsGrade" type="text" placeholder="11 / BSIT / 2nd Year" />
+                </label>
+
+                <label>
+                  Currency
+                  <select id="currencySelect">
+                    <option value="USD">US Dollar ($)</option>
+                    <option value="EUR">Euro (€)</option>
+                    <option value="GBP">British Pound (£)</option>
+                    <option value="PHP">Philippine Peso (₱)</option>
+                    <option value="JPY">Japanese Yen (¥)</option>
+                    <option value="INR">Indian Rupee (₹)</option>
+                    <option value="CAD">Canadian Dollar (CA$)</option>
+                    <option value="AUD">Australian Dollar (A$)</option>
+                  </select>
+                </label>
+
+                <label>
+                  Profile picture
+                  <input id="settingsAvatarInput" type="file" accept="image/*" />
+                </label>
+
+                <div class="preview-wrap small-preview">
+                  <img id="settingsAvatarPreview" src="" alt="Current profile preview" />
+                </div>
+
+                <button id="saveProfileSettings" class="small-btn primary" type="button">Save profile</button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="toolScreen" class="tool-screen hidden" aria-live="polite">
+      <div class="tool-view card glass-panel">
+        <button class="tool-back" id="backFromTool" type="button">← Back to dashboard</button>
+        <div id="toolContent"></div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
